@@ -1,0 +1,171 @@
+.TH GITEA-SYNC 1 "October 2024" "gitea-sync 1.0" "User Commands"
+.SH NAME
+gitea-sync \- manage Gitea repository synchronization with GitHub or GitLab
+.SH SYNOPSIS
+.B gitea-sync
+[\fBCOMMAND\fR] [\fIOPTIONS\fR]
+.SH DESCRIPTION
+.B gitea-sync
+is a CLI tool to manage Gitea and GitHub/GitLab repository synchronization.
+It allows you to create new repositories, add existing repositories with code,
+set up automatic push mirroring, and bulk configure multiple repositories.
+.SH COMMANDS
+.TP
+.B init
+Initialize gitea-sync configuration. Prompts for Gitea, GitHub, and optionally
+GitLab credentials. Configuration is stored in ~/.gitea-sync.yaml with secure
+permissions (0600).
+.TP
+.B create \fI<repo-name>\fR [\fIOPTIONS\fR]
+Create a new repository on Gitea with mirroring to GitHub or GitLab. Creates
+the repository on both platforms, sets up push mirror, initializes with
+README.md and .gitignore, and clones it locally.
+.RS
+.TP
+.B \-p, \-\-private
+Make the repository private
+.TP
+.B \-\-github
+Mirror to GitHub (default)
+.TP
+.B \-\-gitlab
+Mirror to GitLab instead of GitHub
+.RE
+.TP
+.B add [\fIpath\fR] [\fIOPTIONS\fR]
+Add an existing local repository to Gitea with mirroring to GitHub or GitLab.
+If no path is provided, uses the current directory. The repository name is
+detected from the directory name or can be specified with --name.
+.RS
+.TP
+.B \-p, \-\-private
+Make the repository private
+.TP
+.B \-n, \-\-name \fIstring\fR
+Custom repository name (defaults to directory name)
+.TP
+.B \-\-github
+Mirror to GitHub (default)
+.TP
+.B \-\-gitlab
+Mirror to GitLab instead of GitHub
+.RE
+.TP
+.B mirror \fI<repo-name>\fR
+Add GitHub push mirror to an existing Gitea repository.
+.TP
+.B bulk
+Bulk setup mirrors for multiple repositories. Reads repository names from
+stdin, one per line. Press Ctrl+D when done, or pipe a list from a file.
+.TP
+.B help [\fIcommand\fR]
+Display help information about gitea-sync or a specific command.
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Show help information
+.SH EXAMPLES
+.TP
+Initialize configuration:
+.B gitea-sync init
+.TP
+Create a new repository with GitHub mirroring:
+.B gitea-sync create my-project
+.TP
+Create a private repository with GitLab mirroring:
+.B gitea-sync create my-project \-\-private \-\-gitlab
+.TP
+Add current directory with GitHub mirroring:
+.B cd my-existing-project && gitea-sync add
+.TP
+Add with GitLab mirroring and custom name:
+.B gitea-sync add \-\-gitlab \-\-name custom-repo-name
+.TP
+Add a specific directory:
+.B gitea-sync add ./my-project
+.TP
+Bulk setup from a file:
+.B cat repos.txt | gitea-sync bulk
+.SH FILES
+.TP
+.B ~/.gitea-sync.yaml
+Configuration file containing Gitea, GitHub, and GitLab credentials.
+Permissions are set to 0600 for security.
+.SH HOW IT WORKS
+.SS Repository Creation Flow
+1. Repository is created on GitHub or GitLab
+.br
+2. Repository is created on Gitea
+.br
+3. Push mirror is configured (Gitea → GitHub/GitLab)
+.br
+4. Repository is initialized with README.md and .gitignore
+.br
+5. Initial commit is pushed to Gitea
+.br
+6. Mirror automatically syncs to GitHub or GitLab
+.br
+7. Repository is cloned to current directory
+.SS Mirror Sync
+.IP \(bu 2
+Automatic sync on every commit to Gitea
+.IP \(bu 2
+Periodic sync every 8 hours
+.IP \(bu 2
+Changes pushed to Gitea are automatically mirrored to GitHub or GitLab
+.SH GETTING API TOKENS
+.SS Gitea
+1. Go to Settings → Applications
+.br
+2. Generate a new token with repository permissions
+.SS GitHub
+1. Go to Settings → Developer settings → Personal access tokens
+.br
+2. Generate a new token with 'repo' scope
+.SS GitLab
+1. Go to Settings → Access Tokens (or User Settings → Access Tokens)
+.br
+2. Generate a new token with 'api' scope
+.SH SECURITY NOTES
+.IP \(bu 2
+API tokens are stored in ~/.gitea-sync.yaml with permissions 0600
+.IP \(bu 2
+Never commit the config file to version control
+.IP \(bu 2
+Consider using environment variables for CI/CD pipelines
+.IP \(bu 2
+Tokens are transmitted over HTTPS to GitHub (Gitea uses your configured URL)
+.SH REQUIREMENTS
+.IP \(bu 2
+Git installed on your system
+.IP \(bu 2
+Active Gitea instance
+.IP \(bu 2
+GitHub account with API access (for GitHub mirroring)
+.IP \(bu 2
+GitLab account with API access (for GitLab mirroring, optional)
+.SH TROUBLESHOOTING
+.TP
+.B "config file not found"
+Run 'gitea-sync init' first
+.TP
+.B "failed to create repo"
+Check your API tokens have correct permissions and verify the repository
+doesn't already exist
+.TP
+.B "failed to push"
+Check your Gitea URL is accessible and verify your Gitea token has push
+permissions
+.TP
+.B "not a git repository"
+Make sure you're in a directory with a .git folder. Run 'git init' first
+if starting a new repo
+.SH AUTHOR
+Written for Gitea repository synchronization.
+.SH REPORTING BUGS
+Report bugs at: https://github.com/Papiermond/gitea-sync/issues
+.SH COPYRIGHT
+MIT License
+.SH SEE ALSO
+.BR git (1),
+.BR gh (1)

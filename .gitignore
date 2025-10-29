@@ -1,0 +1,33 @@
+# Binaries
+gitea-sync
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Config file (contains secrets)
+.gitea-sync.yaml
+
+# Old shell scripts with hardcoded tokens
+*.sh
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
