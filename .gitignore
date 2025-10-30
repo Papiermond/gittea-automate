@@ -19,7 +19,7 @@ go.work
 .gitea-sync.yaml
 
 # Old shell scripts with hardcoded tokens
-*.sh
+
 
 # IDE
 .idea/
